@@ -13,26 +13,25 @@
 #define LOG(format,...) ;
 #endif
 
-struct connection_struct
+#define CONNECTION_INIT {0, {0}, PTHREAD_MUTEX_INITIALIZER}
+
+typedef struct
 {
     int value;
     char name[64];
     pthread_mutex_t mutex;
-} CONNECTION_INIT = {0, {0}, PTHREAD_MUTEX_INITIALIZER};
-
-
-typedef struct connection_struct connection;
+} connection;
 
 
 typedef struct
 {
-    connection *c;
+    connection **c;
     size_t count;
     size_t _size;
 } cgroup;
 
 
-typedef void *(*devicefunc)(device *d, void *state);
+typedef void *(*devicefunc)(void *dev, void *state);
 
 
 typedef struct

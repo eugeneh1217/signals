@@ -26,6 +26,9 @@ int main()
     res = get_connection(g, "c3");
     assert(res == NULL);
 
+    a.value = 42;
+    assert(get_connection(g, "c0")->value == 42);
+
     destroy_cgroup(g);
 
     printf("all tests passed\n");

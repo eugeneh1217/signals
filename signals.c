@@ -3,8 +3,9 @@
 #include <unistd.h>
 
 
-void *easy_clock_f(device *d, void *arg)
+void *easy_clock_f(void *dev, void *arg)
 {
+    device *d = (device *) dev;
     LOG("starting easy clock");
     int *period = (int *) arg;
     while (1)
@@ -12,7 +13,7 @@ void *easy_clock_f(device *d, void *arg)
         usleep(period);
         for (int i = 0; i < d->conns->count; ++ i)
         {
-            d->conns->c[i].value ^= 1;
+            d->conns->c[i]->value ^= 1;
         }
     }
     return NULL;
