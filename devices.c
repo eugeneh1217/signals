@@ -13,6 +13,10 @@ cgroup *create_cgroup()
 
 void destroy_cgroup(cgroup *g)
 {
+    for (int i = 0; i < g->count; ++ i)
+    {
+        free(g->c[i]);
+    }
     free(g->c);
     free(g);
 }
@@ -31,7 +35,7 @@ connection *get_connection(cgroup *group, char *name)
 }
 
 
-int add_connection(cgroup *group, connection *conn)
+int cg_add_connection(cgroup *group, connection *conn)
 {
     if (group->count == group->_size)
     {
@@ -47,6 +51,16 @@ int add_connection(cgroup *group, connection *conn)
     return 0;
 }
 
+connection *create_connection(cgroup *group, int value, char *name)
+{
+    connection *c = malloc(sizeof(connection));
+    c->value = value;
+    strncpy(c->name, name, 64);
+    pthread_mutex_init(&c->mutex, NULL);
+    cg_add_connection(group, c);
+    return c;
+}
+
 
 device *create_device(devicefunc f, void *init_state)
 {
@@ -60,7 +74,21 @@ device *create_device(devicefunc f, void *init_state)
 
 void destroy_device(device *d)
 {
-    destroy_cgroup(d->conns);
+    // destroy_cgroup(d->conns);
+    free(d->conns->c);
+    free(d->conns);
     free(d);
 }
 
+
+int add_connection(device *d, connection *c)
+{
+    return cg_add_connection(d->conns, c);
+}
+
+
+void *run_device(void *d)
+{
+    device *dev = (device *) d;
+    return dev->f(dev, dev->state);
+}

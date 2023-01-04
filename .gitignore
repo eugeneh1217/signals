@@ -1,5 +1,8 @@
 # ide
 .vscode
 
-# build
+# c
 a.out
+
+# python
+.venv

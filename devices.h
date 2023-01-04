@@ -15,15 +15,15 @@
 
 #define CONNECTION_INIT {0, {0}, PTHREAD_MUTEX_INITIALIZER}
 
-typedef struct
+typedef struct connection
 {
     int value;
-    char name[64];
     pthread_mutex_t mutex;
+    char name[64];
 } connection;
 
 
-typedef struct
+typedef struct cgroup
 {
     connection **c;
     size_t count;
@@ -34,7 +34,7 @@ typedef struct
 typedef void *(*devicefunc)(void *dev, void *state);
 
 
-typedef struct
+typedef struct device
 {
     cgroup *conns;
     devicefunc f;
@@ -45,11 +45,13 @@ typedef struct
 cgroup *create_cgroup();
 void destroy_cgroup(cgroup *g);
 connection *get_connection(cgroup *group, char *name);
-int add_connection(cgroup *group, connection *conn);
+// int cg_add_connection(cgroup *group, connection *conn);
+connection *create_connection(cgroup *group, int value, char *name);
 
 
 device *create_device(devicefunc f, void *init_state);
 void destroy_device(device *d);
-
+int add_connection(device *d, connection *c);
+void *run_device(void *d);
 
 #endif
