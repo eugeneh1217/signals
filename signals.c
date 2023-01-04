@@ -50,20 +50,20 @@ void *writer_f(void *dev, void *state)
     device *d = (device *) dev;
     writer_state *s = (writer_state *) state;
     double elapsed;
-    fprintf(s->f, "t, %s", d->conns->c[0]->name);
+    fprintf(s->f, "t,%s", d->conns->c[0]->name);
     for (int i = 1; i < d->conns->count; ++ i)
     {
-        fprintf(s->f, ", %s", d->conns->c[i]->name);
+        fprintf(s->f, ",%s", d->conns->c[i]->name);
     }
     fprintf(s->f, "\n");
     clock_t start = clock();
     while (1)
     {
         elapsed = ((double)(clock() - start)) * 1000 / CLOCKS_PER_SEC;
-        fprintf(s->f, "%0.8f, %d", elapsed, d->conns->c[0]->value);
+        fprintf(s->f, "%0.8f,%d", elapsed, d->conns->c[0]->value);
         for (int i = 1; i < d->conns->count; ++ i)
         {
-            fprintf(s->f, ", %d", d->conns->c[i]->value);
+            fprintf(s->f, ",%d", d->conns->c[i]->value);
         }
         fprintf(s->f, "\n");
         usleep(s->ms_period * 1000);
@@ -101,8 +101,8 @@ int main()
 {
     FILE *signaltap = fopen("signaltap.csv", "w");
 
-    device *clk = create_easy_clock(100);
-    device *wr = create_writer(50, signaltap);
+    device *clk = create_easy_clock(500);
+    device *wr = create_writer(5, signaltap);
 
     pthread_t clk_thread = start_device_thread(clk);
     pthread_t wr_thread = start_device_thread(wr);
@@ -113,7 +113,7 @@ int main()
     add_connection(clk, cs->c[0]);
     add_connection(wr, cs->c[0]);
 
-    sleep(2);
+    sleep(8);
 
     // pthread_join(clk_thread, NULL);
     // pthread_join(wr_thread, NULL);

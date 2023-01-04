@@ -6,3 +6,4 @@ a.out
 
 # python
 .venv
+__pycache__
