@@ -6,12 +6,12 @@
 
 void *easy_clock_f(void *dev, void *arg)
 {
-    LOG("starting easy clock");
     device *d = (device *) dev;
-    int *period = (int *) arg;
+    int *ms_period = (int *) arg;
+    LOG("starting easy clock with delay of %dms", *ms_period);
     while (1)
     {
-        usleep(*period * 1000);
+        usleep(*ms_period * 1000);
         for (int i = 0; i < d->conns->count; ++ i)
         {
             d->conns->c[i]->value ^= 1;
@@ -46,9 +46,9 @@ typedef struct
 
 void *writer_f(void *dev, void *state)
 {
-    LOG("starting writer");
     device *d = (device *) dev;
     writer_state *s = (writer_state *) state;
+    LOG("starting writer with delay of %dms", s->ms_period);
     double elapsed;
     fprintf(s->f, "t,%s", d->conns->c[0]->name);
     for (int i = 1; i < d->conns->count; ++ i)
@@ -59,8 +59,8 @@ void *writer_f(void *dev, void *state)
     clock_t start = clock();
     while (1)
     {
-        elapsed = ((double)(clock() - start)) * 1000 / CLOCKS_PER_SEC;
-        fprintf(s->f, "%0.8f,%d", elapsed, d->conns->c[0]->value);
+        elapsed = ((double)(clock() - start)) * 1000 * 100 / CLOCKS_PER_SEC;
+        fprintf(s->f, "%0.4f,%d", elapsed, d->conns->c[0]->value);
         for (int i = 1; i < d->conns->count; ++ i)
         {
             fprintf(s->f, ",%d", d->conns->c[i]->value);
