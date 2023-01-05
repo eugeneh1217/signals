@@ -19,7 +19,7 @@ void *easy_clock_f(void *dev, void *arg)
 {
     device *d = (device *) dev;
     int *ms_period = (int *) arg;
-    printf("starting easy clock with %dms period", *ms_period);
+    printf("starting easy clock with %dms period\n", *ms_period);
     struct timespec delay = {0};
     struct timespec rem = {0};
     while (1)
@@ -81,7 +81,7 @@ void *dutyclock_f(void *dev, void *state)
     struct timespec delay = {0};
     struct timespec rem = {0};
 
-    printf("starting dutyclock with %d%% duty cycle and %dms period", dcs->dutypercent, dcs->ms_period);
+    printf("starting dutyclock with %d%% duty cycle and %dms period\n", dcs->dutypercent, dcs->ms_period);
 
     while (1)
     {
@@ -149,7 +149,7 @@ void *writer_f(void *dev, void *state)
     writer_state *s = (writer_state *) state;
     double elapsed;
 
-    printf("starting writer with %dms sample period", s->ms_period);
+    printf("starting writer with %dms sample period\n", s->ms_period);
 
     fprintf(s->f, "t,%s", d->conns->c[0]->name);
     for (int i = 1; i < d->conns->count; ++ i)
@@ -219,7 +219,7 @@ int main(int argc, char **argv)
 
     if (strcmp(mode, "easyclock") == 0)
     {
-        printf("RUNNING EASYCLOCK DEMO");
+        printf("RUNNING EASYCLOCK DEMO\n");
         device *clk = create_easy_clock(1000);
         device *wr = create_writer(5, signaltap);
 
@@ -247,7 +247,7 @@ int main(int argc, char **argv)
     }
     else if (strcmp(mode, "dutyclock") == 0)
     {
-        printf("RUNNING DUTYCLOCK DEMO");
+        printf("RUNNING DUTYCLOCK DEMO\n");
 
         device *dc = create_dutyclock(20, 1000);
         device *wr = create_writer(5, signaltap);
@@ -284,7 +284,7 @@ int main(int argc, char **argv)
     }
     else
     {
-        printf("INVALID DEMO '%s'", mode);
+        printf("INVALID DEMO '%s'\n", mode);
     }
 
     fclose(signaltap);
