@@ -3,7 +3,7 @@
 A small side project to practice real time programming by simulating hardware communication signals in C. Plots are generated with Plotly and Pandas. Devices are run on separate threads in real time and interact with connections. These connections are not mutex protected, so multiple devices writing to same wire results in most recent write overwriting connection value.
 
 ## Demos
-`signals.c` implements and demonstrates the usage of several basic devices. Compile with `make signals` and run with `./a.out <demoname>`.
+`signals.c` implements and demonstrates the usage of several basic devices. Compile with `make signals` and run with `./a.out <demoname>`. Running a demo will output a `signaltap.csv` containing measurements taken by writers. `utils.py` allows `signaltap.csv` to be visualized with `plotly`.
 
 ## Devices
 
