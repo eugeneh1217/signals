@@ -19,7 +19,7 @@ void *easy_clock_f(void *dev, void *arg)
 {
     device *d = (device *) dev;
     int *ms_period = (int *) arg;
-    LOG("starting easy clock with %dms period", *ms_period);
+    printf("starting easy clock with %dms period", *ms_period);
     struct timespec delay = {0};
     struct timespec rem = {0};
     while (1)
@@ -81,7 +81,7 @@ void *dutyclock_f(void *dev, void *state)
     struct timespec delay = {0};
     struct timespec rem = {0};
 
-    LOG("starting dutyclock with %d%% duty cycle and %dms period", dcs->dutypercent, dcs->ms_period);
+    printf("starting dutyclock with %d%% duty cycle and %dms period", dcs->dutypercent, dcs->ms_period);
 
     while (1)
     {
@@ -149,7 +149,7 @@ void *writer_f(void *dev, void *state)
     writer_state *s = (writer_state *) state;
     double elapsed;
 
-    LOG("starting writer with %dms sample period", s->ms_period);
+    printf("starting writer with %dms sample period", s->ms_period);
 
     fprintf(s->f, "t,%s", d->conns->c[0]->name);
     for (int i = 1; i < d->conns->count; ++ i)
@@ -219,7 +219,7 @@ int main(int argc, char **argv)
 
     if (strcmp(mode, "easyclock") == 0)
     {
-        LOG("RUNNING EASYCLOCK DEMO");
+        printf("RUNNING EASYCLOCK DEMO");
         device *clk = create_easy_clock(1000);
         device *wr = create_writer(5, signaltap);
 
@@ -247,7 +247,7 @@ int main(int argc, char **argv)
     }
     else if (strcmp(mode, "dutyclock") == 0)
     {
-        LOG("RUNNING DUTYCLOCK DEMO");
+        printf("RUNNING DUTYCLOCK DEMO");
 
         device *dc = create_dutyclock(20, 1000);
         device *wr = create_writer(5, signaltap);
@@ -274,9 +274,17 @@ int main(int argc, char **argv)
 
         destroy_cgroup(cs);
     }
+    else if (strcmp(mode, "help") == 0)
+    {
+        printf("usage: ./a.out <demoname>\nuse 'list' as <demoname> to display supported demo names\n");
+    }
+    else if (strcmp(mode, "list") == 0)
+    {
+        printf("Supported demos: easyclock, dutyclock\n");
+    }
     else
     {
-        LOG("INVALID DEMO '%s'", mode);
+        printf("INVALID DEMO '%s'", mode);
     }
 
     fclose(signaltap);
