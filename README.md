@@ -10,3 +10,13 @@ Another device is set up to measure and record the clock signal (called "writer"
 ### Results
 Initially, delays were implemented with `usleep` and reading time was implemented with `clock`. This resulted in a sampling time that varied with a standard deviation of $\pm1.89$ ms when set up to sample every $5$ ms. The clock was also quite inconsistent. An improved implementation uses `nanosleep` for delays and `gettimeofday` for reading time. This improved implementation yielded a much more uniform sampling time with a standard deviation of $\pm0.3740$ ms when set up to sample every $5$ ms.
 
+## Devices
+
+### Easy Clock
+Clock with 50% duty cycle and configurable clock period. Oscillates all its connections between 1 and 0. Clock signal(s) will start at 1.
+
+### Duty Clock
+Clock with configurable duty cycle and clock period. Oscillates all its connections between 1 and 0. Clock signal(s) will start at 1.
+
+### Writer
+Records signal values at a configurable sampling period.

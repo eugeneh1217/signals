@@ -149,7 +149,7 @@ void *writer_f(void *dev, void *state)
     writer_state *s = (writer_state *) state;
     double elapsed;
 
-    LOG("starting writer with %dms sample interval", s->ms_period);
+    LOG("starting writer with %dms sample period", s->ms_period);
 
     fprintf(s->f, "t,%s", d->conns->c[0]->name);
     for (int i = 1; i < d->conns->count; ++ i)
