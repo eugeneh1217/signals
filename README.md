@@ -8,7 +8,5 @@ One device is set up as an "easy clock" (called "clk") that oscillates with a sp
 Another device is set up to measure and record the clock signal (called "writer") at "uniform" time intervals.
 
 ### Results
-A naive approach of sampling signal, computing elapsed time, formatting output, and writing to the file system every sample resulted in a sampling time that varied with a standard deviation of $\pm1.89$ ms when set up to sample every $5$ ms. The clock was also quite inconsistent. 
+Initially, delays were implemented with `usleep` and reading time was implemented with `clock`. This resulted in a sampling time that varied with a standard deviation of $\pm1.89$ ms when set up to sample every $5$ ms. The clock was also quite inconsistent. An improved implementation uses `nanosleep` for delays and `gettimeofday` for reading time. This improved implementation yielded a much more uniform sampling time with a standard deviation of $\pm0.3740$ ms when set up to sample every $5$ ms.
 
-### Improvements
-A potential approach to improving this inconsistency could be to delegate IO to other threads.

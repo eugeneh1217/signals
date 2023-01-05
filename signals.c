@@ -2,6 +2,14 @@
 
 #include <unistd.h>
 #include <time.h>
+#include <sys/time.h>
+
+
+long long getms(void) {
+    struct timeval tv;
+    gettimeofday(&tv,NULL);
+    return (((long long)tv.tv_sec)*1000)+(tv.tv_usec/1000);
+}
 
 
 void *easy_clock_f(void *dev, void *arg)
@@ -9,9 +17,17 @@ void *easy_clock_f(void *dev, void *arg)
     device *d = (device *) dev;
     int *ms_period = (int *) arg;
     LOG("starting easy clock with delay of %dms", *ms_period);
+    struct timespec delay = {0};
+    struct timespec rem = {0};
     while (1)
     {
-        usleep(*ms_period * 1000);
+        delay.tv_sec = 0;
+        delay.tv_nsec = *ms_period * 1000 * 1000;
+        while (delay.tv_nsec != 0 || delay.tv_sec != 0)
+        {
+            nanosleep(&delay, &rem);
+            memcpy(&delay, &rem, sizeof(struct timespec));
+        }
         for (int i = 0; i < d->conns->count; ++ i)
         {
             d->conns->c[i]->value ^= 1;
@@ -37,7 +53,14 @@ void destroy_easy_clock(device *ec)
 }
 
 
-typedef struct 
+typedef struct msg
+{
+    char *data;
+    size_t size;
+} msg;
+
+
+typedef struct writer_state
 {
     int ms_period;
     FILE *f;
@@ -50,23 +73,32 @@ void *writer_f(void *dev, void *state)
     writer_state *s = (writer_state *) state;
     LOG("starting writer with delay of %dms", s->ms_period);
     double elapsed;
+
     fprintf(s->f, "t,%s", d->conns->c[0]->name);
     for (int i = 1; i < d->conns->count; ++ i)
     {
         fprintf(s->f, ",%s", d->conns->c[i]->name);
     }
     fprintf(s->f, "\n");
-    clock_t start = clock();
+
+    struct timespec delay = {0}, rem = {0};
+    double start = getms();
     while (1)
     {
-        elapsed = ((double)(clock() - start)) * 1000 * 100 / CLOCKS_PER_SEC;
+        elapsed = getms() - start;
         fprintf(s->f, "%0.4f,%d", elapsed, d->conns->c[0]->value);
         for (int i = 1; i < d->conns->count; ++ i)
         {
             fprintf(s->f, ",%d", d->conns->c[i]->value);
         }
         fprintf(s->f, "\n");
-        usleep(s->ms_period * 1000);
+        delay.tv_sec = 0;
+        delay.tv_nsec = s->ms_period * 1000 * 1000;
+        while (delay.tv_nsec != 0 || delay.tv_sec != 0)
+        {
+            nanosleep(&delay, &rem);
+            memcpy(&delay, &rem, sizeof(struct timespec));
+        }
     }
     return NULL;
 }
@@ -115,8 +147,6 @@ int main()
 
     sleep(8);
 
-    // pthread_join(clk_thread, NULL);
-    // pthread_join(wr_thread, NULL);
     pthread_cancel(clk_thread);
     pthread_cancel(wr_thread);
 
