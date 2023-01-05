@@ -214,7 +214,7 @@ int main(int argc, char **argv)
     {
         sprintf(mode, "%s", argv[1]);
     }
-    
+
     FILE *signaltap = fopen("signaltap.csv", "w");
 
     if (strcmp(mode, "easyclock") == 0)
@@ -274,7 +274,10 @@ int main(int argc, char **argv)
 
         destroy_cgroup(cs);
     }
-    
+    else
+    {
+        LOG("INVALID DEMO '%s'", mode);
+    }
 
     fclose(signaltap);
     return 0;
